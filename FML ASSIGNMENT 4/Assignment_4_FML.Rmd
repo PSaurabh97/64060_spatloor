@@ -1,0 +1,144 @@
+---
+title: "Assignment-4"
+author: "Saurabh Patloori"
+date: "2023-10-29"
+output:
+  pdf_document: default
+  html_document: default
+---
+```{r}
+Pharmaceuticals <- read.csv("C:/Users/patlo/OneDrive/Desktop/Pharmaceuticals.csv")
+```
+
+```{r}
+library(tidyverse)# For Data manipulation
+
+```
+
+```{r}
+library(factoextra)# Used for clustering algorithms and visualization
+
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(cluster)
+
+```
+
+```{r}
+Pharma_data <- na.omit(Pharmaceuticals) 
+#Provides the data after removing the incomplete cases.
+Pharma_data
+
+
+```
+
+```{r}
+#Taking the quantitative variables(1-9) to cluster the 21 firms
+row.names(Pharma_data)<- Pharma_data[,1]
+Pharma_data1<- Pharma_data[,3:11]
+# Considering only numercial values i.e., 3-11 columns from csv file
+head(Pharma_data1)
+
+```
+```{r}
+#Normalizing the data frame with scale method
+Pharma_data2<-scale(Pharma_data1)
+head(Pharma_data2)
+```
+```{r}
+#To determine the number of clusters to do the cluster analysis using Elbow Method
+fviz_nbclust(Pharma_data2, kmeans, method = "wss")
+
+```
+
+```{r}
+##By seeing the above graph from Elbow method, Graph is not 
+#clear to choose k=2 or 3 or 4 or 5.
+#Silhouette method for determining no of clusters
+
+
+fviz_nbclust(Pharma_data2, kmeans, method = "silhouette")
+
+```
+
+```{r}
+#Applying K-means
+set.seed(64060)
+k_5<- kmeans(Pharma_data2,centers=5,nstart = 25)
+
+```
+
+```{r}
+#Visualizing the output
+#centroids
+k_5$centers
+
+```
+```{r}
+fviz_cluster(k_5,data = Pharma_data2) # to Visualize the clusters
+
+```
+
+```{r}
+k_5
+
+```
+
+```{r}
+
+distance<- dist(Pharma_data2, method = "euclidean")
+fviz_dist(distance)
+
+```
+
+```{r}
+## I can see there are 5 clusters and the center is defined after 25 restarts
+#which is determined in kmeans.
+#K - Means Cluster Analysis- Fit the data with 5 clusters
+fit<-kmeans(Pharma_data2,5)
+
+```
+
+
+```{r}
+#Finding the mean value of all quantitative variables for each cluster
+aggregate(Pharma_data2,by=list(fit$cluster),FUN=mean)
+
+```
+
+```{r}
+
+##To view the cluster plot
+
+clusplot(Pharma_data2,fit$cluster,color =
+           TRUE,shade = TRUE,labels = 2,lines = 0)
+
+```
+
+#Task 2: Analyze the clusters in relation to the numerical variables used in their creation.
+AGN, PHA, and BAY are in #Cluster_1, and they have the highest PE_Ratio. #By looking at each cluster's mean values for every quantitative variable. The ROE percentage is low.
+The companies in #Cluster_2 with the largest market capitalization and good leverage values are #JNJ, MRK, GSK, and PFE.
+The three stocks in #Cluster_3 with the lowest beta and asset turnover are #AHM, AVE, and WPI.
+Task 3: Are there any patterns among the clusters concerning the numerical variables (10–12)?
+*(those not used in the formation of clusters)
+#Because cluster 1 has the highest PE Ratio, it should be held in compliance with media recommendations.
+#For cluster 2: It has the biggest market capitalization and a good leverage value. Besides, they can be pretty aggressive.#In cluster 3, the lowest asset turnover and beta are observed. Nonetheless, positive media endorsements predominate.#For cluster 4: Considering the high leverage ratio, they have a cautious recommendation.
+#Cluster 5: They have the lowest revenue growth, the highest asset turnover, and the biggest net profit margin.
+
+
+#Task 4: Give each cluster a fitting name using some or all of the variables in the dataset.
+#Cluster 1: Hold cluster; they have respectable numbers.
+#4 Group 2: Light Buy or Hold a Cluster.
+#Cluster 3: Buying or Selling
+#Cluster 4: Buy Cluster—it is comparatively stable.
+
+
+
+
+
+
+
+
